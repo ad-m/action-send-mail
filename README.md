@@ -1,4 +1,4 @@
-# Send mail Github Action
+# Send mail GitHub Action
 
 An action that simply sends a mail to multiple recipients.
 
@@ -6,7 +6,7 @@ Some features:
 - plain text body
 - HTML body
 - multipart body (plain text + HTML)
-- Markdown to HTML converting
+- Markdown to HTML converting (use `html_body`, not `body`)
 - file attachments (supports globbing)
 
 
@@ -14,13 +14,23 @@ Some features:
 
 ```yaml
 - name: Send mail
-  uses: dawidd6/action-send-mail@v3
+  uses: dawidd6/action-send-mail@v4
   with:
-    # Required mail server address:
+    # Specify connection via URL (replaces server_address, server_port, secure,
+    # username and password)
+    #
+    # Format:
+    #
+    #  * smtp://user:password@server:port
+    #  * smtp+starttls://user:password@server:port
+    connection_url: ${{secrets.MAIL_CONNECTION}}
+    # Required mail server address if not connection_url:
     server_address: smtp.gmail.com
-    # Required mail server port:
+    # Server port, default 25:
     server_port: 465
-    # Optional (recommended): mail server username:
+    # Optional whether this connection use TLS (default is true if server_port is 465)
+    secure: true
+    # Optional (recommended) mail server username:
     username: ${{secrets.MAIL_USERNAME}}
     # Optional (recommended) mail server password:
     password: ${{secrets.MAIL_PASSWORD}}
@@ -30,8 +40,6 @@ Some features:
     to: obiwan@example.com,yoda@example.com
     # Required sender full name (address can be skipped):
     from: Luke Skywalker # <user@example.com>
-    # Optional whether this connection use TLS (default is true if server_port is 465)
-    secure: true
     # Optional plain body:
     body: Build job of ${{github.repository}} completed successfully!
     # Optional HTML body read from file:
@@ -52,6 +60,10 @@ Some features:
     attachments: attachments.zip,git.diff,./dist/static/*.js
     # Optional priority: 'high', 'normal' (default) or 'low'
     priority: low
+    # Optional nodemailerlog: true/false
+    nodemailerlog: false
+    # Optional nodemailerdebug: true/false if true lognodem will also be set true
+    nodemailerdebug: false
 ```
 
 ## Troubleshooting
